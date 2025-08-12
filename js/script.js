@@ -96,7 +96,7 @@ window.showPage = (pageId) => {
     }
 };
 
-const copyTextToClipboard = (text) => {
+window.copyTextToClipboard = (text) => { // Made global
     if (!text || typeof text !== 'string') {
         showToast('Tidak ada teks untuk disalin.');
         return;
@@ -106,14 +106,14 @@ const copyTextToClipboard = (text) => {
             showToast('Teks berhasil disalin!');
         }).catch(err => {
             console.error('Gagal menggunakan navigator.clipboard:', err);
-            fallbackCopy(text);
+            window.fallbackCopy(text); // Call global fallback
         });
     } else {
-        fallbackCopy(text);
+        window.fallbackCopy(text); // Call global fallback
     }
 };
 
-const fallbackCopy = (text) => {
+window.fallbackCopy = (text) => { // Made global
     const textArea = document.createElement("textarea");
     textArea.value = text;
     textArea.style.position = "fixed";
@@ -137,17 +137,17 @@ const fallbackCopy = (text) => {
     document.body.removeChild(textArea);
 };
 
-const copyElementText = (elementId) => {
+window.copyElementText = (elementId) => { // Made global
     const element = document.getElementById(elementId);
     if (element && element.textContent) {
-        copyTextToClipboard(element.textContent);
+        window.copyTextToClipboard(element.textContent); // Call global copy
     } else {
         showToast('Tidak ada teks untuk disalin.');
     }
 };
 
 // Fungsi untuk menyalin semua parameter dalam format yang rapi
-const copyAllParameters = () => {
+window.copyAllParameters = () => { // Made global
     if (currentDetailIndex < 0 || !window.collections[currentDetailIndex]) return;
     const item = window.collections[currentDetailIndex];
     let textToCopy = `Prompt: ${item.prompt}\n\n`;
@@ -177,7 +177,7 @@ const copyAllParameters = () => {
     if(item.tags) textToCopy += `Tags: ${item.tags}\n`;
     if(item.notes) textToCopy += `Notes: ${item.notes}\n`;
 
-    copyTextToClipboard(textToCopy.trim());
+    window.copyTextToClipboard(textToCopy.trim()); // Call global copy
 }
 
 // ===================================================================================
@@ -229,7 +229,7 @@ onAuthStateChanged(auth, (user) => {
     authButton.innerHTML = '<i class="fa-solid fa-sign-out-alt mr-2"></i>Logout';
     // Hanya muat koleksi jika user sudah login
     window.loadCollections(user.uid);
-    showPage('landingPage'); // Tampilkan landing page setelah login
+    window.showPage('landingPage'); // Tampilkan landing page setelah login
   } else {
     // User logout (atau belum login)
     authButton.textContent = 'Login';
@@ -250,7 +250,7 @@ onAuthStateChanged(auth, (user) => {
       console.error("Anonymous sign-in failed:", error);
       showToast("Gagal login anonim. Fungsi penyimpanan mungkin tidak aktif.");
     });
-    showPage('landingPage'); // Tetap tampilkan landing page
+    window.showPage('landingPage'); // Tetap tampilkan landing page
   }
 });
 
@@ -333,7 +333,7 @@ window.renderGallery = (filteredCollections = window.collections) => {
         <div class="flex flex-wrap gap-1 mb-3">
           ${tagsHtml}
         </div>
-        <button onclick="showDetail('${item.id}')" class="w-full mt-auto py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium">
+        <button onclick="window.showDetail('${item.id}')" class="w-full mt-auto py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium">
           Lihat Detail
         </button>
       </div>
@@ -614,7 +614,7 @@ clearAllBtn.addEventListener('click', async function() { // Use clearAllBtn
 // DETAIL MODAL FUNCTIONS
 // ===================================================================================
 
-const showDetail = (id) => {
+window.showDetail = (id) => { // Made global
   currentDetailIndex = window.collections.findIndex(col => col.id === id);
   const item = window.collections[currentDetailIndex];
   if (!item) {
@@ -649,12 +649,12 @@ const showDetail = (id) => {
     loraContainer.innerHTML = tensorData.lora?.map((l, i) => 
         `<div class="flex justify-between items-center">
            <span id="loraValue-${item.id}-${i}">${l.name}: ${l.strength}</span>
-           <i class="fa-solid fa-copy copy-icon" onclick="copyElementText('loraValue-${item.id}-${i}')"></i>
+           <i class="fa-solid fa-copy copy-icon" onclick="window.copyElementText('loraValue-${item.id}-${i}')"></i>
          </div>`
     ).join('') || '<span class="text-gray-500">Tidak ada</span>';
     
     document.getElementById('detailUpscaler').classList.toggle('hidden', !tensorData.upscaler);
-    document.getElementById('detailAdetailer').classList.toggle('hidden', !tensorData.adetailer);
+    document.getElementById('detailAdetailer').classList.toggle('hidden', !tensorData.adetailer); 
   } else {
     tensorParamsContainer.classList.add('hidden');
   }
@@ -662,7 +662,7 @@ const showDetail = (id) => {
   detailModal.classList.remove('hidden');
 };
 
-const closeDetailModal = () => {
+window.closeDetailModal = () => { // Made global
   detailModal.classList.add('hidden');
   currentDetailIndex = -1;
 };
@@ -673,7 +673,7 @@ document.getElementById('deleteItemBtn').addEventListener('click', async functio
         const userConfirmed = window.confirm('Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dibatalkan.');
         if (userConfirmed) {
             await window.deleteCollectionFromFirestore(itemToDelete.id);
-            closeDetailModal();
+            window.closeDetailModal(); // Call global
         }
     } else if (!window.currentUser) {
         showToast('Anda harus login untuk menghapus koleksi!');
@@ -714,9 +714,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('gemini').dispatchEvent(new Event('change'));
   
   // Tampilkan halaman landing di awal
-  showPage('landingPage'); 
+  window.showPage('landingPage'); // Call global
   
   // onAuthStateChanged akan secara otomatis mencoba login anonim
   // yang akan memicu loadCollections jika berhasil
 });
-
