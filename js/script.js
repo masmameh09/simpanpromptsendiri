@@ -12,12 +12,13 @@ import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, 
 // Anda bisa temukan ini di Firebase Console -> Project settings -> General
 // ===================================================================================
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBtwTZezlde_klGTybktv76cYmSvV9CiuE",
+  authDomain: "penyimpan-prompt-asn.firebaseapp.com",
+  projectId: "penyimpan-prompt-asn",
+  storageBucket: "penyimpan-prompt-asn.firebasestorage.app",
+  messagingSenderId: "369533423191",
+  appId: "1:369533423191:web:dff66a2beaade29fc91d12",
+  measurementId: "G-B5X32ER47K"
 };
 
 // Inisialisasi Firebase
@@ -30,9 +31,10 @@ const db = getFirestore(app);
 // cloud_name dari Dashboard Cloudinary Anda.
 // upload_preset dari Upload Preset yang Anda buat (harus UNSIGNED).
 // ===================================================================================
-const CLOUDINARY_CLOUD_NAME = "YOUR_CLOUDINARY_CLOUD_NAME"; // Ganti ini
-const CLOUDINARY_UPLOAD_PRESET = "YOUR_CLOUDINARY_UNSIGNED_UPLOAD_PRESET"; // Ganti ini
+const CLOUDINARY_CLOUD_NAME = "imajinasilokal"; // Ganti ini
+const CLOUDINARY_UPLOAD_PRESET = "simpan_lokal"; // Ganti ini
 const MAX_IMAGE_SIZE_BYTES = 1 * 1024 * 1024; // 1 MB (1 * 1024 KB * 1024 bytes/KB)
+
 
 // ===================================================================================
 // GLOBAL VARIABLES AND DOM ELEMENTS
@@ -717,3 +719,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // onAuthStateChanged akan secara otomatis mencoba login anonim
   // yang akan memicu loadCollections jika berhasil
 });
+
