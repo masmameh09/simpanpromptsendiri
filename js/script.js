@@ -387,7 +387,7 @@ imageForm.addEventListener('submit', async function(e) {
 
   showToast('Mengunggah gambar ke Cloudinary...');
   
-  const platform = document.querySelector('input[name="platform']:checked').value;
+  const platform = document.querySelector('input[name="platform"]:checked').value;
   let model = '';
 
   if (platform === 'tensor') {
@@ -590,7 +590,7 @@ window.clearAllCollections = async function() {
 // ===================================================================================
 
 window.showDetail = (id) => {
-  window.currentDetailIndex = window.collections.findIndex(col => col.id === id); // Pastikan pakai window.
+  window.currentDetailIndex = window.collections.findIndex(col => col.id === id); 
   const item = window.collections[window.currentDetailIndex];
   if (!item) {
     console.error("Item tidak ditemukan dengan ID:", id);
@@ -709,6 +709,141 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Pasang event listener untuk tombol login Google di layar login
   document.getElementById('signInGoogleBtn').addEventListener('click', window.signInWithGoogle);
+
+  // Pasang event listener untuk radio button platform
+  document.querySelectorAll('input[name="platform"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const isTensor = this.value === 'tensor';
+      document.getElementById('tensorFields').classList.toggle('hidden', !isTensor);
+      document.getElementById('altModelFields').classList.toggle('hidden', isTensor); 
+      
+      ['midjourney', 'piclumen', 'gemini', 'leonardo'].forEach(p => {
+        const el = document.getElementById(`${p}Models`);
+        if (el) el.classList.toggle('hidden', this.value !== p);
+      });
+    });
+  });
+
+  // Pasang event listener untuk custom model input
+  document.getElementById('model').addEventListener('change', function() {
+    document.getElementById('customModel').classList.toggle('hidden', this.value !== 'custom');
+  });
+
+  // Pasang event listener untuk image input (preview dan cek ukuran)
+  imageInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > MAX_IMAGE_SIZE_BYTES) {
+          showToast(`Ukuran gambar terlalu besar! Maksimal ${MAX_IMAGE_SIZE_BYTES / (1024 * 1024)} MB.`);
+          imageInput.value = ''; // Clear the input
+          imagePreview.classList.add('hidden');
+          return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+        imagePreview.classList.remove('hidden');
+      }
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Pasang event listener untuk form submission
+  imageForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const imageFile = imageInput.files[0];
+    if (!imageFile) {
+      showToast('Silakan pilih gambar terlebih dahulu!');
+      return;
+    }
+    if (imageFile.size > MAX_IMAGE_SIZE_BYTES) { // Double check size on submit
+      showToast(`Ukuran gambar terlalu besar! Maksimal ${MAX_IMAGE_SIZE_BYTES / (1024 * 1024)} MB.`);
+      return;
+    }
+    if (!window.currentUser) {
+      showToast('Anda harus login untuk menyimpan koleksi! (Coba tombol Login)');
+      return;
+    }
+
+    showToast('Mengunggah gambar ke Cloudinary...');
+    
+    const platform = document.querySelector('input[name="platform"]:checked').value;
+    let model = '';
+
+    if (platform === 'tensor') {
+        model = document.getElementById('model').value === 'custom' 
+            ? document.getElementById('customModel').value 
+            : document.getElementById('model').value;
+    } else {
+        const modelSelect = document.getElementById(`${platform}Model`);
+        if (modelSelect) model = modelSelect.value;
+    }
+    
+    // --- CLOUDINARY DIRECT UPLOAD ---
+    const cloudinaryFormData = new FormData();
+    cloudinaryFormData.append('file', imageFile);
+    cloudinaryFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET); // Gunakan unsigned upload preset
+    cloudinaryFormData.append('folder', `ai_collections/${window.currentUser.uid}`); // Folder per user di Cloudinary
+
+    let imageUrl = '';
+    try {
+      const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+        method: 'POST',
+        body: cloudinaryFormData
+      });
+
+      if (!cloudinaryResponse.ok) {
+        const errorData = await cloudinaryResponse.json();
+        throw new Error(errorData.error.message || 'Gagal mengunggah gambar ke Cloudinary.');
+      }
+
+      const cloudinaryData = await cloudinaryResponse.json();
+      imageUrl = cloudinaryData.secure_url; // Dapatkan URL gambar yang aman dari Cloudinary
+      showToast('Gambar berhasil diunggah ke Cloudinary!');
+
+      // --- SIMPAN METADATA KE FIRESTORE ---
+      const newCollection = {
+        imageUrl: imageUrl, // URL gambar dari Cloudinary
+        platform: platform,
+        model: model,
+        prompt: document.getElementById('prompt').value,
+        negativePrompt: document.getElementById('negativePrompt').value,
+        tags: document.getElementById('tags').value,
+        notes: document.getElementById('notes').value,
+        userId: window.currentUser.uid, // Simpan UID pengguna
+        createdAt: new Date() // Timestamp
+      };
+
+      if (platform === 'tensor') {
+          newCollection.tensorData = {
+              vae: document.getElementById('vae').value,
+              sampler: document.getElementById('sampler').value,
+              scheduler: document.getElementById('scheduler').value,
+              cfg: document.getElementById('cfg').value,
+              steps: document.getElementById('steps').value,
+              seed: document.getElementById('seed').value || 'acak',
+              upscaler: document.getElementById('upscaler').checked,
+              adetailer: document.getElementById('adetailer').checked,
+              lora: Array.from(document.querySelectorAll('.lora-item')).map(item => {
+                  const name = item.querySelector('.lora-name').value.trim();
+                  const strength = item.querySelector('.lora-strength').value;
+                  return name ? { name, strength } : null;
+              }).filter(Boolean)
+          };
+      }
+
+      const userCollectionsRef = getAiCollectionsRef(window.currentUser.uid);
+      await addDoc(userCollectionsRef, newCollection);
+      
+      showToast('Koleksi berhasil disimpan di Firestore!');
+      resetForm();
+      // renderGallery akan dipanggil otomatis oleh onSnapshot dari Firestore
+    } catch (error) {
+      console.error('Error saat menyimpan koleksi:', error);
+      showToast('Error: ' + (error.message || 'Terjadi kesalahan saat unggah/simpan.'));
+    }
+  });
 
   // Pastikan Gemini terpilih secara default saat DOMContentLoaded
   document.getElementById('gemini').checked = true;
