@@ -60,7 +60,7 @@ const savedCollectionsPage = document.getElementById('savedCollectionsPage');
 const exportJsonBtn = document.getElementById('exportJsonBtn');
 const exportZipBtn = document.getElementById('exportZipBtn');
 const exportFilenameInput = document.getElementById('exportFilename');
-const clearAllBtn = document.getElementById('clearAllBtn'); // Changed ID from clearBtn
+const clearAllBtn = document.getElementById('clearAllBtn'); 
 
 // Referensi ke koleksi Firestore
 const getAiCollectionsRef = (userId) => collection(db, `users/${userId}/aiCollections`);
@@ -92,7 +92,7 @@ window.showPage = (pageId) => {
     }
 };
 
-window.copyTextToClipboard = (text) => { // Made global
+window.copyTextToClipboard = (text) => {
     if (!text || typeof text !== 'string') {
         showToast('Tidak ada teks untuk disalin.');
         return;
@@ -102,14 +102,14 @@ window.copyTextToClipboard = (text) => { // Made global
             showToast('Teks berhasil disalin!');
         }).catch(err => {
             console.error('Gagal menggunakan navigator.clipboard:', err);
-            window.fallbackCopy(text); // Call global fallback
+            window.fallbackCopy(text);
         });
     } else {
-        window.fallbackCopy(text); // Call global fallback
+        window.fallbackCopy(text);
     }
 };
 
-window.fallbackCopy = (text) => { // Made global
+window.fallbackCopy = (text) => {
     const textArea = document.createElement("textarea");
     textArea.value = text;
     textArea.style.position = "fixed";
@@ -133,17 +133,16 @@ window.fallbackCopy = (text) => { // Made global
     document.body.removeChild(textArea);
 };
 
-window.copyElementText = (elementId) => { // Made global
+window.copyElementText = (elementId) => {
     const element = document.getElementById(elementId);
     if (element && element.textContent) {
-        window.copyTextToClipboard(element.textContent); // Call global copy
+        window.copyTextToClipboard(element.textContent);
     } else {
         showToast('Tidak ada teks untuk disalin.');
     }
 };
 
-// Fungsi untuk menyalin semua parameter dalam format yang rapi
-window.copyAllParameters = () => { // Made global
+window.copyAllParameters = () => {
     if (currentDetailIndex < 0 || !window.collections[currentDetailIndex]) return;
     const item = window.collections[currentDetailIndex];
     let textToCopy = `Prompt: ${item.prompt}\n\n`;
@@ -161,9 +160,9 @@ window.copyAllParameters = () => { // Made global
         textToCopy += `CFG Scale: ${td.cfg || '-'}\n`;
         textToCopy += `Seed: ${td.seed || '-'}\n`;
         if (td.lora && td.lora.length > 0) {
-            textToCopy += `LoRA:\n`; // Tambahkan baris baru untuk daftar LoRA
+            textToCopy += `LoRA:\n`;
             td.lora.forEach(l => {
-                textToCopy += `  - ${l.name}: ${l.strength}\n`; // Format setiap LoRA dengan indentasi
+                textToCopy += `  - ${l.name}: ${l.strength}\n`;
             });
         }
         if (td.upscaler) textToCopy += `Upscaler: Yes\n`;
@@ -173,7 +172,7 @@ window.copyAllParameters = () => { // Made global
     if(item.tags) textToCopy += `Tags: ${item.tags}\n`;
     if(item.notes) textToCopy += `Notes: ${item.notes}\n`;
 
-    window.copyTextToClipboard(textToCopy.trim()); // Call global copy
+    window.copyTextToClipboard(textToCopy.trim());
 }
 
 // ===================================================================================
@@ -185,7 +184,6 @@ window.signInWithGoogle = async () => {
   try {
     await signInWithPopup(auth, googleProvider);
     showToast('Login berhasil!');
-    // onAuthStateChanged akan menangani pembaruan UI
   } catch (error) {
     console.error('Error saat login dengan Google:', error);
     showToast('Login gagal: ' + (error.message || 'Terjadi kesalahan.'));
@@ -196,14 +194,12 @@ window.signOutUser = async () => {
   try {
     await signOut(auth);
     showToast('Logout berhasil!');
-    // onAuthStateChanged akan menangani pembaruan UI
   } catch (error) {
     console.error('Error saat logout:', error);
     showToast('Logout gagal: ' + (error.message || 'Terjadi kesalahan.'));
   }
 };
 
-// Fungsi untuk mengubah tombol login/logout
 window.handleAuthClick = async () => {
   if (window.currentUser) {
     await window.signOutUser();
@@ -212,41 +208,34 @@ window.handleAuthClick = async () => {
   }
 };
 
-// Listener untuk perubahan status autentikasi
 onAuthStateChanged(auth, (user) => {
-  window.currentUser = user; // Update global user state
+  window.currentUser = user;
   const authButton = document.getElementById('authButton');
 
   if (user) {
-    // User login
     authButton.textContent = 'Logout';
     authButton.classList.remove('bg-red-600', 'hover:bg-red-700');
     authButton.classList.add('bg-gray-600', 'hover:bg-gray-700');
     authButton.innerHTML = '<i class="fa-solid fa-sign-out-alt mr-2"></i>Logout';
-    // Hanya muat koleksi jika user sudah login
     window.loadCollections(user.uid);
-    window.showPage('landingPage'); // Tampilkan landing page setelah login
+    window.showPage('landingPage');
   } else {
-    // User logout (atau belum login)
     authButton.textContent = 'Login';
     authButton.classList.remove('bg-gray-600', 'hover:bg-gray-700');
     authButton.classList.add('bg-red-600', 'hover:bg-red-700');
     authButton.innerHTML = '<i class="fa-solid fa-sign-in-alt mr-2"></i>Login';
-    // Kosongkan koleksi karena tidak ada user yang login
     window.collections = [];
     window.renderGallery();
-    if (window.unsubscribeSnapshot) { // Hentikan listener Firestore sebelumnya
+    if (window.unsubscribeSnapshot) {
         window.unsubscribeSnapshot();
     }
-    // Jika tidak ada user login, kita bisa mencoba login anonim untuk pengujian awal
     signInAnonymously(auth).then(() => {
       console.log("Signed in anonymously for initial testing.");
-      // onAuthStateChanged akan terpicu lagi dengan user anonim
     }).catch((error) => {
       console.error("Anonymous sign-in failed:", error);
       showToast("Gagal login anonim. Fungsi penyimpanan mungkin tidak aktif.");
     });
-    window.showPage('landingPage'); // Tetap tampilkan landing page
+    window.showPage('landingPage');
   }
 });
 
@@ -254,10 +243,7 @@ onAuthStateChanged(auth, (user) => {
 // FIRESTORE & DATA HANDLING FUNCTIONS
 // ===================================================================================
 
-// Fungsi untuk memuat koleksi dari Firestore secara real-time
-// Diperbarui untuk mendukung pengguna anonim
 window.loadCollections = (userId) => {
-    // Hentikan listener sebelumnya jika ada
     if (window.unsubscribeSnapshot) {
         window.unsubscribeSnapshot();
     }
@@ -270,15 +256,14 @@ window.loadCollections = (userId) => {
             id: doc.id,
             ...doc.data()
         }));
-        window.renderGallery();
-        window.applyFilters(); // Terapkan filter setelah data baru dimuat
+        window.renderGallery(); // Render galeri setelah data dimuat
+        window.applyFilters();
     }, (error) => {
         console.error("Error fetching collections from Firestore:", error);
         showToast("Gagal memuat koleksi dari database. Coba login.");
     });
 };
 
-// Fungsi untuk menghapus dokumen dari Firestore
 window.deleteCollectionFromFirestore = async (collectionId) => {
   if (!window.currentUser) {
     showToast('Anda harus login untuk menghapus koleksi!');
@@ -287,8 +272,6 @@ window.deleteCollectionFromFirestore = async (collectionId) => {
   try {
     await deleteDoc(doc(db, `users/${window.currentUser.uid}/aiCollections`, collectionId));
     showToast('Koleksi berhasil dihapus dari database! (Gambar di Cloudinary tidak terhapus otomatis)');
-    // Catatan: Gambar di Cloudinary tidak dihapus otomatis karena ini adalah unsigned upload.
-    // Penghapusan aman dari Cloudinary memerlukan backend.
   } catch (error) {
     console.error('Gagal menghapus koleksi dari Firestore:', error);
     showToast('Gagal menghapus koleksi.');
@@ -299,7 +282,6 @@ window.deleteCollectionFromFirestore = async (collectionId) => {
 // MAIN APP LOGIC (RENDER GALLERY, FORM SUBMISSION, ETC.)
 // ===================================================================================
 
-// Fungsi untuk menampilkan koleksi di galeri
 window.renderGallery = (filteredCollections = window.collections) => {
   gallery.innerHTML = '';
   if (filteredCollections.length === 0) {
@@ -329,12 +311,20 @@ window.renderGallery = (filteredCollections = window.collections) => {
         <div class="flex flex-wrap gap-1 mb-3">
           ${tagsHtml}
         </div>
-        <button onclick="window.showDetail('${item.id}')" class="w-full mt-auto py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium">
+        <button class="view-detail-btn w-full mt-auto py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium" data-id="${item.id}">
           Lihat Detail
         </button>
       </div>
     `;
     gallery.appendChild(galleryItem);
+  });
+
+  // PASANG EVENT LISTENER SETELAH ELEMEN DIBUAT
+  document.querySelectorAll('.view-detail-btn').forEach(button => {
+      button.addEventListener('click', (event) => {
+          const itemId = event.target.dataset.id;
+          window.showDetail(itemId);
+      });
   });
 };
 
@@ -489,7 +479,7 @@ document.getElementById('resetFormBtn').addEventListener('click', () => {
 });
 
 // Handle Export JSON button with custom filename
-window.exportJson = function() { // Made global
+window.exportJson = function() {
   if (window.collections.length === 0) {
     showToast('Tidak ada data untuk diekspor.');
     return;
@@ -514,25 +504,13 @@ window.exportJson = function() { // Made global
 };
 
 // Handle Export ZIP button (placeholder/explanation)
-window.exportZip = function() { // Made global
+window.exportZip = function() {
     showToast('Ekspor ke ZIP dengan gambar memerlukan backend yang lebih kompleks. Untuk saat ini, Anda bisa mengekspor JSON.');
-    // Implementasi ZIP dengan gambar dari Cloudinary memerlukan:
-    // 1. Library JSZip (https://stuk.github.io/jszip/)
-    // 2. Fetch setiap gambar dari URL Cloudinary
-    // 3. Menambahkan gambar ke objek JSZip
-    // 4. Menghasilkan file ZIP
-    // Ini bisa sangat memakan sumber daya browser dan lambat untuk banyak gambar.
-    // Jika Anda ingin ZIP hanya berisi JSON, itu lebih mudah:
-    // const zip = new JSZip();
-    // zip.file(filename.replace('.json', '.zip'), JSON.stringify(window.collections, null, 2));
-    // zip.generateAsync({type:"blob"}).then(function(content) {
-    //     saveAs(content, filename.replace('.json', '.zip'));
-    // });
 };
 
 
 // Handle Import JSON button
-window.importJson = () => document.getElementById('importInput').click(); // Made global
+window.importJson = () => document.getElementById('importInput').click();
 document.getElementById('importInput').addEventListener('change', async function(e) {
   const file = e.target.files[0];
   if (file) {
@@ -580,7 +558,7 @@ document.getElementById('importInput').addEventListener('change', async function
 });
 
 // Handle Clear All button (menghapus semua koleksi pengguna)
-window.clearAllCollections = async function() { // Made global
+window.clearAllCollections = async function() {
     if (!window.currentUser) {
       showToast('Anda harus login untuk menghapus koleksi!');
       return;
@@ -610,7 +588,7 @@ window.clearAllCollections = async function() { // Made global
 // DETAIL MODAL FUNCTIONS
 // ===================================================================================
 
-window.showDetail = (id) => { // Made global
+window.showDetail = (id) => {
   currentDetailIndex = window.collections.findIndex(col => col.id === id);
   const item = window.collections[currentDetailIndex];
   if (!item) {
@@ -641,11 +619,10 @@ window.showDetail = (id) => { // Made global
     document.getElementById('detailVae').textContent = tensorData.vae || 'Default';
     
     const loraContainer = document.getElementById('detailLora');
-    // Memastikan setiap LoRA memiliki ID unik untuk disalin
     loraContainer.innerHTML = tensorData.lora?.map((l, i) => 
         `<div class="flex justify-between items-center">
            <span id="loraValue-${item.id}-${i}">${l.name}: ${l.strength}</span>
-           <i class="fa-solid fa-copy copy-icon" onclick="window.copyElementText('loraValue-${item.id}-${i}')"></i>
+           <i class="fa-solid fa-copy copy-icon copy-lora-btn" data-lora-id="loraValue-${item.id}-${i}"></i>
          </div>`
     ).join('') || '<span class="text-gray-500">Tidak ada</span>';
     
@@ -656,24 +633,31 @@ window.showDetail = (id) => { // Made global
   }
 
   detailModal.classList.remove('hidden');
-};
 
-window.closeDetailModal = () => { // Made global
-  detailModal.classList.add('hidden');
-  currentDetailIndex = -1;
-};
+  // Pasang event listener untuk tombol salin di dalam modal detail
+  document.getElementById('copyPromptBtn').addEventListener('click', () => window.copyElementText('detailPrompt'));
+  document.getElementById('copyNegativePromptBtn').addEventListener('click', () => window.copyElementText('detailNegativePrompt'));
+  document.getElementById('copyAllParametersBtn').addEventListener('click', window.copyAllParameters);
+  document.getElementById('closeDetailModalBtn').addEventListener('click', window.closeDetailModal);
+  document.getElementById('deleteItemBtn').addEventListener('click', window.deleteCurrentItem);
 
-window.deleteCurrentItem = async function() { // Made global
-    if (currentDetailIndex > -1 && window.currentUser) {
-        const itemToDelete = window.collections[currentDetailIndex];
-        const userConfirmed = window.confirm('Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dibatalkan.');
-        if (userConfirmed) {
-            await window.deleteCollectionFromFirestore(itemToDelete.id);
-            window.closeDetailModal(); // Call global
-        }
-    } else if (!window.currentUser) {
-        showToast('Anda harus login untuk menghapus koleksi!');
-    }
+  // Pasang event listener untuk ikon salin per item parameter
+  document.getElementById('copyPlatformBtn').addEventListener('click', () => window.copyElementText('detailPlatform'));
+  document.getElementById('copyModelBtn').addEventListener('click', () => window.copyElementText('detailModel'));
+  document.getElementById('copyVaeBtn').addEventListener('click', () => window.copyElementText('detailVae'));
+  document.getElementById('copySamplerBtn').addEventListener('click', () => window.copyElementText('detailSampler'));
+  document.getElementById('copySchedulerBtn').addEventListener('click', () => window.copyElementText('detailScheduler'));
+  document.getElementById('copyStepsBtn').addEventListener('click', () => window.copyElementText('detailSteps'));
+  document.getElementById('copyCfgBtn').addEventListener('click', () => window.copyElementText('detailCfg'));
+  document.getElementById('copySeedBtn').addEventListener('click', () => window.copyElementText('detailSeed'));
+  
+  // Event listener untuk ikon salin LoRA (karena dibuat dinamis, perlu delegasi atau pasang setelah render)
+  document.querySelectorAll('.copy-lora-btn').forEach(button => {
+      button.addEventListener('click', (event) => {
+          const loraId = event.target.dataset.loraId;
+          window.copyElementText(loraId);
+      });
+  });
 };
 
 // ===================================================================================
@@ -705,6 +689,23 @@ platformFilter.addEventListener('change', window.applyFilters);
 // ===================================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Pasang event listeners untuk tombol navigasi bubble
+  document.getElementById('createCollectionMenuItem').addEventListener('click', () => window.showPage('createCollectionPage'));
+  document.getElementById('savedCollectionsMenuItem').addEventListener('click', () => window.showPage('savedCollectionsPage'));
+  document.getElementById('settingsMenuItem').addEventListener('click', () => window.showToast('Fitur ini akan segera hadir!'));
+  
+  // Pasang event listeners untuk tombol kembali ke menu
+  document.getElementById('backToLandingFromCreate').addEventListener('click', () => window.showPage('landingPage'));
+  document.getElementById('backToLandingFromSaved').addEventListener('click', () => window.showPage('landingPage'));
+
+  // Pasang event listeners untuk tombol di halaman galeri/form
+  document.getElementById('authButton').addEventListener('click', window.handleAuthClick);
+  document.getElementById('resetFormBtn').addEventListener('click', () => resetForm()); // resetForm is not global
+  document.getElementById('exportJsonBtn').addEventListener('click', window.exportJson);
+  document.getElementById('exportZipBtn').addEventListener('click', window.exportZip);
+  document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importInput').click()); // Import button still needs direct click for file input
+  document.getElementById('clearAllBtn').addEventListener('click', window.clearAllCollections);
+
   // Pastikan Gemini terpilih secara default saat DOMContentLoaded
   document.getElementById('gemini').checked = true;
   document.getElementById('gemini').dispatchEvent(new Event('change'));
