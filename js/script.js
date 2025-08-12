@@ -12,13 +12,12 @@ import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, 
 // Anda bisa temukan ini di Firebase Console -> Project settings -> General
 // ===================================================================================
 const firebaseConfig = {
-  apiKey: "AIzaSyBtwTZezlde_klGTybktv76cYmSvV9CiuE",
-  authDomain: "penyimpan-prompt-asn.firebaseapp.com",
-  projectId: "penyimpan-prompt-asn",
-  storageBucket: "penyimpan-prompt-asn.firebasestorage.app",
-  messagingSenderId: "369533423191",
-  appId: "1:369533423191:web:dff66a2beaade29fc91d12",
-  measurementId: "G-B5X32ER47K"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
 // Inisialisasi Firebase
@@ -31,8 +30,8 @@ const db = getFirestore(app);
 // cloud_name dari Dashboard Cloudinary Anda.
 // upload_preset dari Upload Preset yang Anda buat (harus UNSIGNED).
 // ===================================================================================
-const CLOUDINARY_CLOUD_NAME = "imajinasilokal"; // Ganti ini
-const CLOUDINARY_UPLOAD_PRESET = "simpan_lokal"; // Ganti ini
+const CLOUDINARY_CLOUD_NAME = "YOUR_CLOUDINARY_CLOUD_NAME"; // Ganti ini
+const CLOUDINARY_UPLOAD_PRESET = "YOUR_CLOUDINARY_UNSIGNED_UPLOAD_PRESET"; // Ganti ini
 const MAX_IMAGE_SIZE_BYTES = 1 * 1024 * 1024; // 1 MB (1 * 1024 KB * 1024 bytes/KB)
 
 // ===================================================================================
@@ -145,6 +144,7 @@ const copyElementText = (elementId) => {
     }
 };
 
+// Fungsi untuk menyalin semua parameter dalam format yang rapi
 const copyAllParameters = () => {
     if (currentDetailIndex < 0 || !window.collections[currentDetailIndex]) return;
     const item = window.collections[currentDetailIndex];
@@ -163,7 +163,10 @@ const copyAllParameters = () => {
         textToCopy += `CFG Scale: ${td.cfg || '-'}\n`;
         textToCopy += `Seed: ${td.seed || '-'}\n`;
         if (td.lora && td.lora.length > 0) {
-            textToCopy += `LoRA: ${td.lora.map(l => `${l.name}: ${l.strength}`).join(', ')}\n`;
+            textToCopy += `LoRA:\n`; // Tambahkan baris baru untuk daftar LoRA
+            td.lora.forEach(l => {
+                textToCopy += `  - ${l.name}: ${l.strength}\n`; // Format setiap LoRA dengan indentasi
+            });
         }
         if (td.upscaler) textToCopy += `Upscaler: Yes\n`;
         if (td.adetailer) textToCopy += `ADetailer: Yes\n`;
@@ -640,10 +643,11 @@ const showDetail = (id) => {
     document.getElementById('detailVae').textContent = tensorData.vae || 'Default';
     
     const loraContainer = document.getElementById('detailLora');
+    // Memastikan setiap LoRA memiliki ID unik untuk disalin
     loraContainer.innerHTML = tensorData.lora?.map((l, i) => 
         `<div class="flex justify-between items-center">
-           <span id="loraValue-${i}">${l.name}: ${l.strength}</span>
-           <i class="fa-solid fa-copy copy-icon" onclick="copyElementText('loraValue-${i}')"></i>
+           <span id="loraValue-${item.id}-${i}">${l.name}: ${l.strength}</span>
+           <i class="fa-solid fa-copy copy-icon" onclick="copyElementText('loraValue-${item.id}-${i}')"></i>
          </div>`
     ).join('') || '<span class="text-gray-500">Tidak ada</span>';
     
