@@ -1,502 +1,184 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PENYIMPAN KOLEKSI GAMBAR AI | by IMAJINASILOKAL</title>
-  <!-- Menghubungkan Font Awesome untuk ikon -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></link>
-  <!-- Menghubungkan file CSS kustom Anda -->
-  <link rel="stylesheet" href="css/style.css"></link>
-  <!-- Tailwind CSS CDN Script - Pindahkan ke sini agar dimuat setelah CSS kustom -->
-  <script src="https://cdn.tailwindcss.com"></script> 
+
+  <!-- Icons & Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen">
-  <!-- LAYAR LOGIN/AUTENTIKASI (Disembunyikan secara default, muncul saat logout) -->
-  <div id="loginSection" class="fixed inset-0 bg-gray-900 text-white flex items-center justify-center z-50 hidden">
-      <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 text-center">
-          <h2 class="text-2xl font-bold mb-4 flex items-center justify-center gap-2">
-              <i class="fa-solid fa-user-circle"></i> Login
-          </h2>
-          <p class="text-gray-300 mb-6">Silakan login dengan akun Google Anda untuk mengakses koleksi.</p>
-          <button id="signInGoogleBtn" class="w-full py-3 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition flex items-center justify-center gap-2">
-            <i class="fa-brands fa-google"></i> Login dengan Google
-          </button>
-      </div>
-  </div>
-
-  <!-- KONTEN APLIKASI UTAMA -->
-  <div id="appContent"> 
-    <div class="max-w-6xl mx-auto px-4 py-6">
-      <!-- Header -->
-      <header class="mb-8 text-center">
-        <div class="header-gradient p-5 text-white rounded-2xl shadow-lg mb-4">
-          <h1 class="text-3xl md:text-4xl font-bold mb-2">
-            <i class="fa-solid fa-cloud-arrow-up mr-2"></i>
-            PENYIMPAN KOLEKSI GAMBAR AI
-          </h1>
-          <p class="text-indigo-100 text-lg">by IMAJINASILOKAL</p>
-        </div>
-        <div class="flex justify-center mb-4 gap-4">
-            <!-- Tombol Login/Logout dinamis -->
-            <button id="authButton" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium">
-              <i class="fa-solid fa-sign-in-alt mr-2"></i>Login
-            </button>
-        </div>
-        <p class="text-gray-600 max-w-2xl mx-auto">
-          Simpan dan kelola koleksi gambar AI beserta prompt dan parameternya dengan mudah. 
-          Ekspor dan impor data Anda untuk berbagi atau backup.
-        </p>
-      </header>
-
-      <!-- Halaman Landing Page dengan Menu Bubble -->
-      <div id="landingPage" class="flex flex-col items-center justify-center py-16">
-        <h2 class="text-3xl font-bold text-gray-800 mb-8">Selamat Datang!</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div id="createCollectionMenuItem" class="bubble-menu-item bg-indigo-500 hover:bg-indigo-600 text-white rounded-full shadow-lg p-8 flex flex-col items-center justify-center cursor-pointer transform hover:scale-105 transition duration-300">
-            <i class="fa-solid fa-plus-circle text-5xl mb-4"></i>
-            <span class="text-xl font-semibold">Buat Koleksi Baru</span>
-          </div>
-          <div id="savedCollectionsMenuItem" class="bubble-menu-item bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg p-8 flex flex-col items-center justify-center cursor-pointer transform hover:scale-105 transition duration-300">
-            <i class="fa-solid fa-images text-5xl mb-4"></i>
-            <span class="text-xl font-semibold">Koleksi Tersimpan</span>
-          </div>
-          <div id="settingsMenuItem" class="bubble-menu-item bg-yellow-500 hover:bg-yellow-600 text-white rounded-full shadow-lg p-8 flex flex-col items-center justify-center cursor-pointer transform hover:scale-105 transition duration-300 opacity-70">
-            <i class="fa-solid fa-gear text-5xl mb-4"></i>
-            <span class="text-xl font-semibold">Pengaturan</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Form Input (Disembunyikan secara default) -->
-      <div id="createCollectionPage" class="hidden">
-        <div class="bg-white rounded-2xl shadow-xl mb-8 overflow-hidden">
-          <div class="header-gradient p-5 text-white">
-            <h2 class="text-xl font-bold flex items-center gap-2">
-              <i class="fa-solid fa-plus-circle"></i>
-              Tambah Koleksi Baru
-            </h2>
-          </div>
-          <form id="imageForm" class="p-5">
-            <div class="mb-6">
-              <label class="block mb-3 font-medium text-gray-700 text-lg">
-                <i class="fa-solid fa-image mr-2"></i>
-                Unggah Gambar AI
-              </label>
-              <div class="flex items-center justify-center w-full">
-                <label for="imageInput" class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 border-gray-300 hover:border-indigo-400">
-                  <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-3"></i>
-                    <p class="mb-2 text-sm text-gray-500">
-                      <span class="font-semibold">Klik untuk upload</span> atau drag & drop
-                    </p>
-                    <p class="text-xs text-gray-500">PNG, JPG (Max. 1MB)</p>
-                  </div>
-                  <input id="imageInput" type="file" accept="image/*" class="hidden" required>
-                </label>
-              </div>
-              <div id="imagePreview" class="mt-3 hidden">
-                <img id="previewImg" class="max-h-64 rounded-lg shadow border mx-auto" alt="Preview Gambar">
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label for="prompt" class="block mb-2 font-medium text-gray-700">
-                  <i class="fa-solid fa-keyboard mr-2"></i>
-                  Prompt
-                </label>
-                <textarea id="prompt" rows="4" class="block w-full p-4 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500" placeholder="Masukkan prompt untuk menghasilkan gambar ini..." required></textarea>
-              </div>
-              <div>
-                <label for="negativePrompt" class="block mb-2 font-medium text-gray-700">
-                  <i class="fa-solid fa-ban mr-2"></i>
-                  Negative Prompt
-                </label>
-                <textarea id="negativePrompt" rows="3" class="block w-full p-4 border rounded-xl focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500" placeholder="Elemen yang tidak diinginkan dalam gambar..."></textarea>
-              </div>
-            </div>
-            <div class="mb-6">
-              <label class="block mb-3 font-medium text-gray-700 text-lg">
-                <i class="fa-solid fa-cube mr-2"></i>
-                Pilih Platform
-              </label>
-              <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div>
-                  <input type="radio" name="platform" id="tensor" value="tensor" class="hidden peer">
-                  <label for="tensor" class="platform-card flex flex-col items-center justify-center p-4 bg-white border border-gray-300 rounded-xl cursor-pointer peer-checked:border-indigo-500 peer-checked:ring-2 peer-checked:ring-indigo-200 hover:bg-gray-50">
-                    <i class="fa-solid fa-robot text-3xl mb-3 text-indigo-600"></i>
-                    <span class="font-medium">Tensor</span>
-                  </label>
-                </div>
-                <div>
-                  <input type="radio" name="platform" id="midjourney" value="midjourney" class="hidden peer">
-                  <label for="midjourney" class="platform-card flex flex-col items-center justify-center p-4 bg-white border border-gray-300 rounded-xl cursor-pointer peer-checked:border-indigo-500 peer-checked:ring-2 peer-checked:ring-indigo-200 hover:bg-gray-50">
-                    <i class="fa-brands fa-artstation text-3xl mb-3 text-purple-600"></i>
-                    <span class="font-medium">Midjourney</span>
-                  </label>
-                </div>
-                <div>
-                  <input type="radio" name="platform" id="gemini" value="gemini" class="hidden peer" checked> <!-- Default to Gemini -->
-                  <label for="gemini" class="platform-card flex flex-col items-center justify-center p-4 bg-white border border-gray-300 rounded-xl cursor-pointer peer-checked:border-indigo-500 peer-checked:ring-2 peer-checked:ring-indigo-200 hover:bg-gray-50">
-                    <i class="fa-solid fa-gem text-3xl mb-3 text-blue-600"></i>
-                    <span class="font-medium">Gemini</span>
-                  </label>
-                </div>
-                <div>
-                  <input type="radio" name="platform" id="piclumen" value="piclumen" class="hidden peer">
-                  <label for="piclumen" class="platform-card flex flex-col items-center justify-center p-4 bg-white border border-gray-300 rounded-xl cursor-pointer peer-checked:border-indigo-500 peer-checked:ring-2 peer-checked:ring-indigo-200 hover:bg-gray-50">
-                    <i class="fa-solid fa-palette text-3xl mb-3 text-green-600"></i>
-                    <span class="font-medium">Piclumen</span>
-                  </label>
-                </div>
-                <div>
-                  <input type="radio" name="platform" id="leonardo" value="leonardo" class="hidden peer">
-                  <label for="leonardo" class="platform-card flex flex-col items-center justify-center p-4 bg-white border border-gray-300 rounded-xl cursor-pointer peer-checked:border-indigo-500 peer-checked:ring-2 peer-checked:ring-indigo-200 hover:bg-gray-50">
-                    <i class="fa-solid fa-paintbrush text-3xl mb-3 text-amber-600"></i>
-                    <span class="font-medium">Leonardo</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div id="tensorFields" class="hidden"> 
-              <div class="bg-indigo-50 border-l-4 border-indigo-500 rounded-lg p-4 mb-6">
-                <h3 class="text-lg font-semibold mb-4 text-indigo-700 flex items-center gap-2">
-                  <i class="fa-solid fa-sliders"></i>
-                  Pengaturan Tensor
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <label class="block mb-2 font-medium text-gray-700">Model / Checkpoint</label>
-                    <select id="model" class="block w-full p-3 border rounded-lg bg-white">
-                      <option value="" disabled selected>Pilih Model</option>
-                      <optgroup label="Model Populer">
-                        <option value="Flux.1-Dev-FP8">Flux.1-Dev-FP8</option>
-                        <option value="HUBG_Realistic">HUBG_Realistic</option>
-                        <option value="SD_2.1">Stable Diffusion 2.1</option>
-                      </optgroup>
-                      <optgroup label="Model Lainnya">
-                        <option value="SDXL">Stable Diffusion XL</option>
-                        <option value="PONY">PONY Diffusion</option>
-                        <option value="Illustrious">Illustrious</option>
-                        <option value="DreamShaper">DreamShaper</option>
-                        <option value="RevAnimated">RevAnimated</option>
-                        <option value="RealisticVision">RealisticVision</option>
-                        <option value="custom">Lainnya...</option>
-                      </optgroup>
-                    </select>
-                    <input type="text" id="customModel" class="block w-full p-3 border rounded-lg mt-2 hidden" placeholder="Nama model custom">
-                  </div>
-                  <div>
-                    <label class="block mb-2 font-medium text-gray-700">VAE</label>
-                    <select id="vae" class="block w-full p-3 border rounded-lg bg-white">
-                      <option value="" selected>Default</option>
-                      <optgroup label="VAE Populer">
-                        <option value="vae-ft-mse-840000-ema-pruned">vae-ft-mse-840000-ema-pruned</option>
-                        <option value="orangemix.vae">orangemix.vae</option>
-                        <option value="kl-f8-anime2.vae">kl-f8-anime2.vae</option>
-                      </optgroup>
-                      <optgroup label="VAE Lainnya">
-                        <option value="anything-v4.0.vae">anything-v4.0.vae</option>
-                        <option value="wd-1-5-vae">wd-1-5-vae</option>
-                      </optgroup>
-                    </select>
-                  </div>
-                </div>
-                <div class="mb-6">
-                  <label class="block mb-3 font-medium text-gray-700">
-                    <i class="fa-solid fa-layer-group mr-2"></i>
-                    LoRA (Maksimal 6)
-                  </label>
-                  <div class="lora-grid">
-                    <div class="lora-item"><input type="text" class="lora-name" placeholder="Nama LoRA (cth: DetailEnhancer)"><input type="number" min="0" max="2" step="0.1" value="0.8" class="lora-strength" placeholder="Strength"></div>
-                    <div class="lora-item"><input type="text" class="lora-name" placeholder="Nama LoRA"><input type="number" min="0" max="2" step="0.1" value="0.0" class="lora-strength" placeholder="Strength"></div>
-                    <div class="lora-item"><input type="text" class="lora-name" placeholder="Nama LoRA"><input type="number" min="0" max="2" step="0.1" value="0.0" class="lora-strength" placeholder="Strength"></div>
-                    <div class="lora-item"><input type="text" class="lora-name" placeholder="Nama LoRA"><input type="number" min="0" max="2" step="0.1" value="0.0" class="lora-strength" placeholder="Strength"></div>
-                    <div class="lora-item"><input type="text" class="lora-name" placeholder="Nama LoRA"><input type="number" min="0" max="2" step="0.1" value="0.0" class="lora-strength" placeholder="Strength"></div>
-                    <div class="lora-item"><input type="text" class="lora-name" placeholder="Nama LoRA"><input type="number" min="0" max="2" step="0.1" value="0.0" class="lora-strength" placeholder="Strength"></div>
-                  </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  <div>
-                    <label class="block mb-2 font-medium text-gray-700">Sampler</label>
-                    <select id="sampler" class="block w-full p-3 border rounded-lg bg-white">
-                      <option value="euler">euler</option>
-                      <option value="euler_ancestral">euler_ancestral</option>
-                      <option value="heun">heun</option>
-                      <option value="heunpp2">heunpp2</option>
-                      <option value="dpm_2">dpm_2</option>
-                      <option value="dpm_2_ancestral">dpm_2_ancestral</option>
-                      <option value="lms">lms</option>
-                      <option value="dpm_fast">dpm_fast</option>
-                      <option value="dpm_adaptive">dpm_adaptive</option>
-                      <option value="dpmpp_2s_ancestral">dpmpp_2s_ancestral</option>
-                      <option value="dpmpp_sde_gpu">dpmpp_sde_gpu</option>
-                      <option value="dpmpp_2m" selected>dpmpp_2m</option>
-                      <option value="dpmpp_2m_sde_gpu">dpmpp_2m_sde_gpu</option>
-                      <option value="dpmpp_3m_sde_gpu">dpmpp_3m_sde_gpu</option>
-                      <option value="ddpm">ddpm</option>
-                      <option value="lcm">lcm</option>
-                      <option value="restart">restart</option>
-                      <option value="euler_dy">euler_dy</option>
-                      <option value="euler_smea_dy">euler_smea_dy</option>
-                      <option value="ddim">ddim</option>
-                      <option value="uni_pc">uni_pc</option>
-                      <option value="uni_pc_bh2">uni_pc_bh2</option>
-                      <option value="sde_multistep">sde_multistep</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block mb-2 font-medium text-gray-700">Scheduler</label>
-                    <select id="scheduler" class="block w-full p-3 border rounded-lg bg-white">
-                      <option value="normal" selected>normal</option>
-                      <option value="karras">karras</option>
-                      <option value="sgm_uniform">sgm_uniform</option>
-                      <option value="exponential">exponential</option>
-                      <option value="simple">simple</option>
-                      <option value="ddim_uniform">ddim_uniform</option>
-                      <option value="beta">beta</option>
-                      <option value="linear quadratic">linear quadratic</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block mb-2 font-medium text-gray-700">Guidance Scale</label>
-                    <input type="number" id="cfg" min="0" max="20" step="0.1" value="3.5" class="block w-full p-3 border rounded-lg" placeholder="cth: 3.5">
-                  </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  <div>
-                    <label class="block mb-2 font-medium text-gray-700">Steps</label>
-                    <input type="number" id="steps" min="1" max="150" value="30" class="block w-full p-3 border rounded-lg" placeholder="cth: 30">
-                  </div>
-                  <div>
-                    <label class="block mb-2 font-medium text-gray-700">Seed</label>
-                    <input type="number" id="seed" class="block w-full p-3 border rounded-lg" placeholder="Seed value (acak jika kosong)">
-                  </div>
-                  <div class="flex items-center">
-                    <input type="checkbox" id="upscaler" class="w-5 h-5 text-indigo-600 rounded">
-                    <label for="upscaler" class="ml-2 font-medium text-gray-700">Gunakan Upscaler</label>
-                  </div>
-                </div>
-                <div class="flex items-center">
-                  <input type="checkbox" id="adetailer" class="w-5 h-5 text-indigo-600 rounded" checked>
-                  <label for="adetailer" class="ml-2 font-medium text-gray-700">Gunakan ADetailer</label>
-                </div>
-              </div>
-            </div>
-            <div id="altModelFields"> 
-              <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4 mb-6">
-                <h3 class="text-lg font-semibold mb-4 text-blue-700 flex items-center gap-2">
-                  <i class="fa-solid fa-gear"></i>
-                  Pengaturan Model
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div id="midjourneyModels" class="hidden model-group"><label class="block mb-2 font-medium text-gray-700">Model Midjourney</label><select id="midjourneyModel" class="block w-full p-3 border rounded-lg bg-white"><option value="V7" selected>V7 (default)</option><option value="V6">V6</option><option value="V5.2">V5.2</option><option value="V5.1">V5.1</option><option value="V5">V5</option><option value="V4">V4</option><option value="V3">V3</option><option value="V2">V2</option><option value="V1">V1</option><option value="Niji V5">Niji V5</option><option value="Niji V4">Niji V4</option></select></div>
-                  <div id="piclumenModels" class="hidden model-group"><label class="block mb-2 font-medium text-gray-700">Model Piclumen</label><select id="piclumenModel" class="block w-full p-3 border rounded-lg bg-white"><option value="PicLumen Art V1">PicLumen Art V1</option><option value="PicLumen Realistic V2" selected>PicLumen Realistic V2</option><option value="PicLumen Anime V2">PicLumen Anime V2</option><option value="PicLumen Lineart V1">PicLumen Lineart V1</option><option value="Namiya">Namiya</option><option value="FLUX.1 Kontext">FLUX.1 Kontext</option><option value="Primo">Primo</option><option value="Pony Diffusion V6">Pony Diffusion V6</option><option value="FLUX.1-schnell">FLUX.1-schnell</option><option value="FLUX.1-dev">FLUX.1-dev</option></select></div>
-                  <div id="dreaminaModels" class="hidden model-group"><label class="block mb-2 font-medium text-gray-700">Model Dreamina</label><select id="dreaminaModel" class="block w-full p-3 border rounded-lg bg-white"><option value="Gambar 3.1" selected>Gambar 3.1</option><option value="Gambar 3.0">Gambar 3.0</option><option value="Gambar 2.1">Gambar 2.1</option><option value="Gambar 2.0 Pro">Gambar 2.0 Pro</option><option value="Gambar 1.4">Gambar 1.4</option></select></div>
-                  <div id="leonardoModels" class="hidden model-group"><label class="block mb-2 font-medium text-gray-700">Model Leonardo</label><select id="leonardoModel" class="block w-full p-3 border rounded-lg bg-white"><optgroup label="Preset Model Styles"><option value="Cinematic Kino">Cinematic Kino</option><option value="Concept Art">Concept Art</option><option value="Graphic Design">Graphic Design</option><option value="Illustrative Albedo">Illustrative Albedo</option><option value="Leonardo Lightning">Leonardo Lightning</option><option value="Lifelike Vision">Lifelike Vision</option><option value="Portrait Perfect">Portrait Perfect</option><optgroup label="Featured Models"><option value="Lucid Realism">Lucid Realism</option><option value="GPT-Image-1">GPT-Image-1</option><option value="FLUX.1 Kontext">FLUX.1 Kontext</option><option value="Phoenix 1.0">Phoenix 1.0</option><option value="Flux Dev">Flux Dev</option><option value="Flux Schnell">Flux Schnell</option><option value="Phoenix 0.9">Phoenix 0.9</option><option value="Anime">Anime</option></optgroup></select></div>
-                  <div id="geminiModels" class="model-group"> <!-- Displayed by default -->
-                    <label class="block mb-2 font-medium text-gray-700">Model Gemini</label>
-                    <select id="geminiModel" class="block w-full p-3 border rounded-lg bg-white">
-                      <option value="Gemini 2.5 Flash">Gemini 2.5 Flash</option>
-                      <option value="Gemini 2.5 Pro" selected>Gemini 2.5 Pro</option>
-                      <option value="Custom Gem">Custom Gem</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="mt-6">
-              <h3 class="text-lg font-semibold mb-4 text-indigo-700 flex items-center gap-2">
-                <i class="fa-solid fa-tags"></i>
-                Metadata
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label for="tags" class="block mb-2 font-medium text-gray-700">Tags</label>
-                  <input type="text" id="tags" class="block w-full p-3 border rounded-lg" placeholder="Pisahkan dengan koma (cth: potret, seni digital, wanita)">
-                </div>
-                <div>
-                  <label for="notes" class="block mb-2 font-medium text-gray-700">Catatan</label>
-                  <textarea id="notes" rows="3" class="block w-full p-3 border rounded-lg" placeholder="Catatan tambahan tentang prompt atau gambar..."></textarea>
-                </div>
-              </div>
-            </div>
-            <div class="mt-8 flex flex-wrap gap-3">
-              <button type="submit" class="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 flex items-center gap-2 font-medium">
-                <i class="fa-solid fa-save"></i>
-                Simpan Koleksi
-              </button>
-              <button type="button" id="backToLandingFromCreate" class="px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 flex items-center gap-2 font-medium">
-                <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Menu
-              </button>
-              <button type="button" id="resetFormBtn" class="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 flex items-center gap-2 font-medium">
-                <i class="fa-solid fa-undo"></i>
-                Reset Form
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- Gallery (Koleksi Tersimpan) (Disembunyikan secara default) -->
-      <div id="savedCollectionsPage" class="hidden">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-          <h2 class="text-2xl font-bold flex items-center gap-2">
-            <i class="fa-solid fa-images text-indigo-600"></i>
-            Galeri Koleksi
-          </h2>
-          <div class="flex gap-3">
-            <div class="relative">
-              <input type="text" id="searchInput" placeholder="Cari prompt atau tag..." class="pl-10 pr-4 py-2 border rounded-lg w-full md:w-64">
-              <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            </div>
-            <select id="platformFilter" class="border rounded-lg px-3 py-2">
-              <option value="">Semua Platform</option>
-              <option value="tensor">Tensor</option>
-              <option value="midjourney">Midjourney</option>
-              <option value="gemini">Gemini</option>
-              <option value="piclumen">Piclumen</option>
-              <option value="leonardo">Leonardo</option>
-            </select>
-          </div>
-        </div>
-        
-        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          <!-- Konten galeri akan diisi oleh JavaScript -->
-        </div>
-        <div id="emptyGallery" class="text-center py-16 text-gray-500 hidden">
-            <i class="fa-solid fa-ghost text-5xl mb-4"></i>
-            <p class="text-xl">Galeri masih kosong.</p>
-            <p>Tambahkan koleksi baru untuk memulai.</p>
-        </div>
-
-        <div class="mt-8 flex flex-wrap gap-3 items-center">
-          <button type="button" id="backToLandingFromSaved" class="px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 flex items-center gap-2 font-medium">
-            <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Menu
-          </button>
-          <input type="text" id="exportFilename" placeholder="Nama file ekspor (opsional)" class="p-3 border rounded-lg flex-grow max-w-xs">
-          <button type="button" id="exportJsonBtn" class="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 flex items-center gap-2 font-medium">
-            <i class="fa-solid fa-file-export"></i>
-            Export JSON
-          </button>
-          <button type="button" id="exportZipBtn" class="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 flex items-center gap-2 font-medium">
-            <i class="fa-solid fa-file-archive"></i>
-            Export ZIP
-          </button>
-          <input type="file" id="importInput" accept="application/json" class="hidden">
-          <button type="button" id="importBtn" class="px-6 py-3 bg-yellow-600 text-white rounded-xl hover:bg-yellow-700 flex items-center gap-2 font-medium">
-            <i class="fa-solid fa-file-import"></i>
-            Import JSON
-          </button>
-          <button type="button" id="clearAllBtn" class="px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 flex items-center gap-2 font-medium">
-            <i class="fa-solid fa-trash"></i>
-            Hapus Semua
-          </button>
-        </div>
-      </div>
+  <!-- Header -->
+  <header class="header-gradient text-white py-6 shadow-md">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <h1 class="text-2xl md:text-3xl font-bold tracking-wide">Penyimpan Koleksi Gambar AI</h1>
+      <button id="authButton" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium">
+        <i class="fa-solid fa-sign-in-alt mr-2"></i>Login
+      </button>
     </div>
-  </div>
+    <p class="text-white/90 max-w-3xl mx-auto px-4 mt-3">
+      Simpan dan kelola koleksi gambar AI beserta prompt dan parameternya. Ekspor & impor data untuk backup/berbagi.
+    </p>
+  </header>
+
+  <main class="container mx-auto px-4 py-10">
+    <!-- Landing Page / Menu Bubble -->
+    <section id="landingPage" class="flex flex-col items-center justify-center">
+      <h2 class="text-3xl font-bold text-gray-800 mb-8">Selamat Datang!</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div id="createCollectionMenuItem" class="bubble-menu-item bg-white rounded-full shadow-lg p-8 flex flex-col items-center justify-center cursor-pointer">
+          <i class="fa-solid fa-plus-circle text-5xl mb-4"></i>
+          <span class="text-xl font-semibold">Buat Koleksi Baru</span>
+        </div>
+        <div id="savedCollectionsMenuItem" class="bubble-menu-item bg-white rounded-full shadow-lg p-8 flex flex-col items-center justify-center cursor-pointer">
+          <i class="fa-solid fa-images text-5xl mb-4"></i>
+          <span class="text-xl font-semibold">Koleksi Tersimpan</span>
+        </div>
+        <div id="settingsMenuItem" class="bubble-menu-item bg-white rounded-full shadow-lg p-8 flex flex-col items-center justify-center cursor-pointer">
+          <i class="fa-solid fa-gear text-5xl mb-4"></i>
+          <span class="text-xl font-semibold">Pengaturan (coming soon)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Create Collection Page (contoh ringkas: pratinjau & simpan) -->
+    <section id="createCollectionPage" class="hidden">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold">Buat Koleksi Baru</h2>
+        <button id="backToLandingFromCreate" class="px-4 py-2 bg-gray-200 rounded-md">Kembali</button>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <label class="block text-sm font-medium">Gambar</label>
+          <input id="imageInput" type="file" accept="image/*" class="w-full" />
+          <div id="imagePreview" class="hidden">
+            <img id="previewImg" alt="preview" class="w-full h-48 object-cover rounded-lg border" />
+          </div>
+
+          <label class="block text-sm font-medium">Platform</label>
+          <select id="platform" class="w-full rounded-lg border px-3 py-2">
+            <option value="gemini">Gemini</option>
+            <option value="tensor">Tensor</option>
+            <option value="flux">Flux</option>
+            <option value="piclumen">Piclumen</option>
+            <option value="leonardo">Leonardo</option>
+          </select>
+
+          <label class="block text-sm font-medium">Model</label>
+          <input id="model" type="text" class="w-full rounded-lg border px-3 py-2" placeholder="mis: Gemini Flash 2.5" />
+
+          <label class="block text-sm font-medium">Prompt</label>
+          <textarea id="prompt" rows="4" class="w-full rounded-lg border px-3 py-2"></textarea>
+
+          <label class="block text-sm font-medium">Negative Prompt</label>
+          <textarea id="negativePrompt" rows="3" class="w-full rounded-lg border px-3 py-2"></textarea>
+
+          <label class="block text-sm font-medium">Tags (pisah koma)</label>
+          <input id="tags" type="text" class="w-full rounded-lg border px-3 py-2" placeholder="fashion, neon, candid" />
+
+          <label class="block text-sm font-medium">Catatan</label>
+          <textarea id="notes" rows="2" class="w-full rounded-lg border px-3 py-2"></textarea>
+
+          <button id="saveBtn" type="button" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Simpan</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Saved Collections Page -->
+    <section id="savedCollectionsPage" class="hidden">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold">Koleksi Tersimpan</h2>
+        <button id="backToLandingFromSaved" class="px-4 py-2 bg-gray-200 rounded-md">Kembali</button>
+      </div>
+
+      <div class="mb-4 flex items-center gap-3">
+        <input id="searchInput" type="text" class="rounded-lg border px-3 py-2 w-full md:w-80" placeholder="Cari model/tags/platform..." />
+        <button id="filterButton" type="button" class="px-3 py-2 bg-gray-100 rounded-md border">Filter</button>
+      </div>
+
+      <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
+      <div id="emptyGallery" class="text-center py-16 text-gray-500 hidden">
+        <i class="fa-solid fa-ghost text-5xl mb-4"></i>
+        <p class="text-xl">Galeri masih kosong.</p>
+        <p>Tambahkan koleksi baru untuk memulai.</p>
+      </div>
+    </section>
+  </main>
 
   <!-- Detail Modal -->
-  <div id="detailModal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden">
-    <div class="bg-white rounded-2xl shadow-lg max-w-4xl w-full max-h-[90vh] overflow-auto detail-modal">
-      <div class="header-gradient p-5 text-white sticky top-0 z-10">
-        <h3 class="text-xl font-bold">Detail Koleksi</h3>
-        <button id="closeDetailModalBtn" class="text-white hover:text-gray-200">
+  <div id="detailModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4">
+      <div class="flex items-center justify-between px-6 py-4 border-b">
+        <h3 class="text-xl font-semibold">Detail Koleksi</h3>
+        <button id="closeDetailModalBtn" type="button" class="text-gray-500 hover:text-gray-700">
           <i class="fa-solid fa-xmark text-2xl"></i>
         </button>
       </div>
-      <div class="p-6">
-        <div class="flex flex-col lg:flex-row gap-8">
-          <!-- Image Column -->
-          <div class="lg:w-2/5">
-            <img id="detailImage" src="" class="rounded-xl shadow-lg border w-full">
-            <div class="mt-4 flex flex-wrap gap-2">
-                <button id="deleteItemBtn" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-trash"></i> Hapus
-                </button>
+      <div class="p-6 grid md:grid-cols-2 gap-6">
+        <div>
+          <img id="detailImage" class="w-full h-64 object-cover rounded-lg border" alt="detail" />
+        </div>
+        <div class="space-y-3">
+          <div>
+            <div class="text-sm text-gray-500">Platform</div>
+            <div id="detailPlatform" class="font-semibold">-</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">Model</div>
+            <div id="detailModel" class="font-semibold">-</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">Tags</div>
+            <div id="detailTags" class="flex flex-wrap gap-2"></div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">Prompt</div>
+            <pre id="detailPrompt" class="bg-gray-100 rounded-md p-3 whitespace-pre-wrap text-sm"></pre>
+            <div class="flex gap-2 mt-2">
+              <button id="copyPromptBtn" type="button" class="px-3 py-1.5 bg-gray-800 text-white rounded-md text-sm">Salin Prompt</button>
             </div>
           </div>
-          <!-- Info Column -->
-          <div class="lg:w-3/5">
-            <div class="space-y-4">
-              <!-- Tombol Salin -->
-              <div class="bg-gray-50 rounded-xl p-4">
-                <h4 class="font-semibold text-lg mb-3 flex items-center gap-2">
-                  <i class="fa-solid fa-copy"></i>
-                  Salin Data
-                </h4>
-                <div class="space-y-2">
-                  <button id="copyPromptBtn" class="copy-btn w-full text-left px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-between">
-                    <span>Salin Prompt</span><i class="fa-solid fa-copy"></i>
-                  </button>
-                  <button id="copyNegativePromptBtn" class="copy-btn w-full text-left px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-between">
-                    <span>Salin Negative Prompt</span><i class="fa-solid fa-copy"></i>
-                  </button>
-                  <button id="copyAllParametersBtn" class="copy-btn w-full text-left px-3 py-2 bg-indigo-200 hover:bg-indigo-300 rounded-lg flex items-center justify-between font-semibold text-indigo-800">
-                    <span>Salin Semua Parameter</span><i class="fa-solid fa-paste"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Detail -->
-              <div>
-                <h4 class="font-semibold text-lg mb-2 flex items-center gap-2"><i class="fa-solid fa-comment"></i>Prompt</h4>
-                <p id="detailPrompt" class="text-gray-700 leading-relaxed bg-gray-50 p-3 rounded-lg break-words"></p>
-              </div>
-              <div>
-                <h4 class="font-semibold text-lg mb-2 flex items-center gap-2"><i class="fa-solid fa-ban"></i>Negative Prompt</h4>
-                <p id="detailNegativePrompt" class="text-gray-700 leading-relaxed bg-gray-50 p-3 rounded-lg break-words"></p>
-              </div>
-              
-              <!-- Parameter -->
-              <div id="detailParametersSection" class="bg-gray-50 rounded-lg p-4">
-                <div class="flex justify-between items-center">
-                    <h4 class="font-semibold text-lg flex items-center gap-2"><i class="fa-solid fa-info-circle"></i>Parameter</h4>
-                </div>
-                <div class="mt-3 space-y-2 text-sm">
-                    <div class="flex justify-between items-center"><span><strong>Platform:</strong> <span id="detailPlatform" class="font-normal capitalize"></span></span><i class="fa-solid fa-copy copy-icon" id="copyPlatformBtn"></i></div>
-                    <div class="flex justify-between items-center"><span><strong>Model:</strong> <span id="detailModel" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copyModelBtn"></i></div>
-                    
-                    <div id="detailTensorParams" class="space-y-2">
-                        <div class="flex justify-between items-center"><span><strong>VAE:</strong> <span id="detailVae" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copyVaeBtn"></i></div>
-                        <div class="flex justify-between items-center"><span><strong>Sampler:</strong> <span id="detailSampler" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copySamplerBtn"></i></div>
-                        <div class="flex justify-between items-center"><span><strong>Scheduler:</strong> <span id="detailScheduler" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copySchedulerBtn"></i></div>
-                        <div class="flex justify-between items-center"><span><strong>Steps:</strong> <span id="detailSteps" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copyStepsBtn"></i></div>
-                        <div class="flex justify-between items-center"><span><strong>CFG Scale:</strong> <span id="detailCfg" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copyCfgBtn"></i></div>
-                        <div class="flex justify-between items-center"><span><strong>Seed:</strong> <span id="detailSeed" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copySeedBtn"></i></div>
-                        <div class="mt-2">
-                            <strong>LoRA:</strong>
-                            <div id="detailLora" class="space-y-1 mt-1"></div>
-                        </div>
-                        <div class="mt-2 flex gap-2">
-                            <span id="detailUpscaler" class="badge bg-yellow-100 text-yellow-800 hidden">Upscaler</span>
-                            <span id="detailAdetailer" class="badge bg-yellow-100 text-yellow-800 hidden">ADetailer</span>
-                        </div>
-                    </div>
-                </div>
-              </div>
-
-              <div>
-                <h4 class="font-semibold text-lg mb-2 flex items-center gap-2"><i class="fa-solid fa-tags"></i>Tags</h4>
-                <div id="detailTags" class="flex flex-wrap gap-2"></div>
-                <span id="detailTagsText" class="hidden"></span>
-              </div>
-              <div>
-                <h4 class="font-semibold text-lg mb-2 flex items-center gap-2"><i class="fa-solid fa-sticky-note"></i>Catatan</h4>
-                <p id="detailNotes" class="text-gray-700 bg-gray-50 p-3 rounded-lg min-h-16 break-words"></p>
-              </div>
+          <div>
+            <div class="text-sm text-gray-500">Negative Prompt</div>
+            <pre id="detailNegativePrompt" class="bg-gray-100 rounded-md p-3 whitespace-pre-wrap text-sm"></pre>
+            <div class="flex gap-2 mt-2">
+              <button id="copyNegativePromptBtn" type="button" class="px-3 py-1.5 bg-gray-800 text-white rounded-md text-sm">Salin Negative</button>
             </div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">Catatan</div>
+            <pre id="detailNotes" class="bg-gray-100 rounded-md p-3 whitespace-pre-wrap text-sm"></pre>
+          </div>
+          <div class="pt-2 flex gap-2">
+            <button id="copyAllParametersBtn" type="button" class="px-3 py-2 bg-indigo-600 text-white rounded-md">Salin Semua</button>
+            <button id="deleteItemBtn" type="button" class="px-3 py-2 bg-red-600 text-white rounded-md">Hapus</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification -->
-  <div id="toast" class="toast">Pesan notifikasi</div>
+  <!-- Modal Login (opsional, tombol header langsung login juga) -->
+  <div id="loginModal" class="fixed inset-0 bg-black/60 items-center justify-center z-50 hidden">
+    <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 text-center text-white">
+      <h2 class="text-2xl font-bold mb-4 flex items-center justify-center gap-2"><i class="fa-solid fa-user-circle"></i> Login</h2>
+      <p class="text-gray-300 mb-6">Silakan login dengan akun Google Anda untuk mengakses koleksi.</p>
+      <button id="signInGoogleBtn" type="button" class="w-full py-3 bg-red-500 rounded-lg hover:bg-red-600 font-medium transition flex items-center justify-center gap-2">
+        <i class="fa-brands fa-google"></i> Login dengan Google
+      </button>
+    </div>
+  </div>
 
-  <!-- Menghubungkan file JavaScript eksternal -->
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- App Script -->
   <script src="js/script.js" type="module"></script>
 </body>
 </html>
