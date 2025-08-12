@@ -37,6 +37,7 @@ const MAX_IMAGE_SIZE_BYTES = 1 * 1024 * 1024; // 1 MB (1 * 1024 KB * 1024 bytes/
 // ===================================================================================
 window.currentUser = null; // Menyimpan objek pengguna yang sedang login
 window.collections = [];   // Akan diisi dari Firestore
+window.currentDetailIndex = -1; // Variabel global untuk melacak index item yang sedang dilihat detailnya
 
 const gallery = document.getElementById('gallery');
 const emptyGallery = document.getElementById('emptyGallery');
@@ -143,8 +144,8 @@ window.copyElementText = (elementId) => {
 };
 
 window.copyAllParameters = () => {
-    if (currentDetailIndex < 0 || !window.collections[currentDetailIndex]) return;
-    const item = window.collections[currentDetailIndex];
+    if (window.currentDetailIndex < 0 || !window.collections[window.currentDetailIndex]) return;
+    const item = window.collections[window.currentDetailIndex];
     let textToCopy = `Prompt: ${item.prompt}\n\n`;
     textToCopy += `Negative Prompt: ${item.negativePrompt || '-'}\n\n`;
     textToCopy += `---\n`;
@@ -589,8 +590,8 @@ window.clearAllCollections = async function() {
 // ===================================================================================
 
 window.showDetail = (id) => {
-  currentDetailIndex = window.collections.findIndex(col => col.id === id);
-  const item = window.collections[currentDetailIndex];
+  window.currentDetailIndex = window.collections.findIndex(col => col.id === id); // Pastikan pakai window.
+  const item = window.collections[window.currentDetailIndex];
   if (!item) {
     console.error("Item tidak ditemukan dengan ID:", id);
     return;
