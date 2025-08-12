@@ -256,7 +256,7 @@ window.loadCollections = (userId) => {
             id: doc.id,
             ...doc.data()
         }));
-        window.renderGallery(); // Render galeri setelah data dimuat
+        window.renderGallery();
         window.applyFilters();
     }, (error) => {
         console.error("Error fetching collections from Firestore:", error);
@@ -705,6 +705,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('exportZipBtn').addEventListener('click', window.exportZip);
   document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importInput').click()); // Import button still needs direct click for file input
   document.getElementById('clearAllBtn').addEventListener('click', window.clearAllCollections);
+
+  // Pasang event listener untuk tombol login Google di layar login
+  document.getElementById('signInGoogleBtn').addEventListener('click', window.signInWithGoogle);
 
   // Pastikan Gemini terpilih secara default saat DOMContentLoaded
   document.getElementById('gemini').checked = true;
