@@ -387,7 +387,7 @@ imageForm.addEventListener('submit', async function(e) {
 
   showToast('Mengunggah gambar ke Cloudinary...');
   
-  const platform = document.querySelector('input[name="platform"]:checked').value;
+  const platform = document.querySelector('input[name="platform']:checked').value;
   let model = '';
 
   if (platform === 'tensor') {
@@ -701,10 +701,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Pasang event listeners untuk tombol di halaman galeri/form
   document.getElementById('authButton').addEventListener('click', window.handleAuthClick);
-  document.getElementById('resetFormBtn').addEventListener('click', () => resetForm()); // resetForm is not global
+  document.getElementById('resetFormBtn').addEventListener('click', () => resetForm()); 
   document.getElementById('exportJsonBtn').addEventListener('click', window.exportJson);
   document.getElementById('exportZipBtn').addEventListener('click', window.exportZip);
-  document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importInput').click()); // Import button still needs direct click for file input
+  document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importInput').click()); 
   document.getElementById('clearAllBtn').addEventListener('click', window.clearAllCollections);
 
   // Pasang event listener untuk tombol login Google di layar login
