@@ -19,9 +19,7 @@
               <i class="fa-solid fa-user-circle"></i> Login
           </h2>
           <p class="text-gray-300 mb-6">Silakan login dengan akun Google Anda untuk mengakses koleksi.</p>
-          <button 
-            onclick="window.signInWithGoogle()" 
-            class="w-full py-3 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition flex items-center justify-center gap-2">
+          <button id="signInGoogleBtn" class="w-full py-3 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition flex items-center justify-center gap-2">
             <i class="fa-brands fa-google"></i> Login dengan Google
           </button>
       </div>
@@ -41,7 +39,7 @@
         </div>
         <div class="flex justify-center mb-4 gap-4">
             <!-- Tombol Login/Logout dinamis -->
-            <button id="authButton" onclick="window.handleAuthClick()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium">
+            <button id="authButton" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium">
               <i class="fa-solid fa-sign-in-alt mr-2"></i>Login
             </button>
         </div>
@@ -55,15 +53,15 @@
       <div id="landingPage" class="flex flex-col items-center justify-center py-16">
         <h2 class="text-3xl font-bold text-gray-800 mb-8">Selamat Datang!</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div onclick="window.showPage('createCollectionPage')" class="bubble-menu-item bg-indigo-500 hover:bg-indigo-600 text-white rounded-full shadow-lg p-8 flex flex-col items-center justify-center cursor-pointer transform hover:scale-105 transition duration-300">
+          <div id="createCollectionMenuItem" class="bubble-menu-item bg-indigo-500 hover:bg-indigo-600 text-white rounded-full shadow-lg p-8 flex flex-col items-center justify-center cursor-pointer transform hover:scale-105 transition duration-300">
             <i class="fa-solid fa-plus-circle text-5xl mb-4"></i>
             <span class="text-xl font-semibold">Buat Koleksi Baru</span>
           </div>
-          <div onclick="window.showPage('savedCollectionsPage')" class="bubble-menu-item bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg p-8 flex flex-col items-center justify-center cursor-pointer transform hover:scale-105 transition duration-300">
+          <div id="savedCollectionsMenuItem" class="bubble-menu-item bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg p-8 flex flex-col items-center justify-center cursor-pointer transform hover:scale-105 transition duration-300">
             <i class="fa-solid fa-images text-5xl mb-4"></i>
             <span class="text-xl font-semibold">Koleksi Tersimpan</span>
           </div>
-          <div onclick="window.showToast('Fitur ini akan segera hadir!')" class="bubble-menu-item bg-yellow-500 hover:bg-yellow-600 text-white rounded-full shadow-lg p-8 flex flex-col items-center justify-center cursor-pointer transform hover:scale-105 transition duration-300 opacity-70">
+          <div id="settingsMenuItem" class="bubble-menu-item bg-yellow-500 hover:bg-yellow-600 text-white rounded-full shadow-lg p-8 flex flex-col items-center justify-center cursor-pointer transform hover:scale-105 transition duration-300 opacity-70">
             <i class="fa-solid fa-gear text-5xl mb-4"></i>
             <span class="text-xl font-semibold">Pengaturan</span>
           </div>
@@ -328,7 +326,7 @@
                 <i class="fa-solid fa-save"></i>
                 Simpan Koleksi
               </button>
-              <button type="button" onclick="window.showPage('landingPage')" class="px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 flex items-center gap-2 font-medium">
+              <button type="button" id="backToLandingFromCreate" class="px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 flex items-center gap-2 font-medium">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Menu
               </button>
               <button type="button" id="resetFormBtn" class="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 flex items-center gap-2 font-medium">
@@ -373,24 +371,24 @@
         </div>
 
         <div class="mt-8 flex flex-wrap gap-3 items-center">
-          <button type="button" onclick="window.showPage('landingPage')" class="px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 flex items-center gap-2 font-medium">
+          <button type="button" id="backToLandingFromSaved" class="px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 flex items-center gap-2 font-medium">
             <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Menu
           </button>
           <input type="text" id="exportFilename" placeholder="Nama file ekspor (opsional)" class="p-3 border rounded-lg flex-grow max-w-xs">
-          <button type="button" id="exportJsonBtn" onclick="window.exportJson()" class="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 flex items-center gap-2 font-medium">
+          <button type="button" id="exportJsonBtn" class="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 flex items-center gap-2 font-medium">
             <i class="fa-solid fa-file-export"></i>
             Export JSON
           </button>
-          <button type="button" id="exportZipBtn" onclick="window.exportZip()" class="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 flex items-center gap-2 font-medium">
+          <button type="button" id="exportZipBtn" class="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 flex items-center gap-2 font-medium">
             <i class="fa-solid fa-file-archive"></i>
             Export ZIP
           </button>
           <input type="file" id="importInput" accept="application/json" class="hidden">
-          <button type="button" id="importBtn" onclick="window.importJson()" class="px-6 py-3 bg-yellow-600 text-white rounded-xl hover:bg-yellow-700 flex items-center gap-2 font-medium">
+          <button type="button" id="importBtn" class="px-6 py-3 bg-yellow-600 text-white rounded-xl hover:bg-yellow-700 flex items-center gap-2 font-medium">
             <i class="fa-solid fa-file-import"></i>
             Import JSON
           </button>
-          <button type="button" id="clearAllBtn" onclick="window.clearAllCollections()" class="px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 flex items-center gap-2 font-medium">
+          <button type="button" id="clearAllBtn" class="px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 flex items-center gap-2 font-medium">
             <i class="fa-solid fa-trash"></i>
             Hapus Semua
           </button>
@@ -404,7 +402,7 @@
     <div class="bg-white rounded-2xl shadow-lg max-w-4xl w-full max-h-[90vh] overflow-auto detail-modal">
       <div class="header-gradient text-white p-5 flex justify-between items-center sticky top-0 z-10">
         <h3 class="text-xl font-bold">Detail Koleksi</h3>
-        <button onclick="window.closeDetailModal()" class="text-white hover:text-gray-200">
+        <button id="closeDetailModalBtn" class="text-white hover:text-gray-200">
           <i class="fa-solid fa-xmark text-2xl"></i>
         </button>
       </div>
@@ -414,7 +412,7 @@
           <div class="lg:w-2/5">
             <img id="detailImage" src="" class="rounded-xl shadow-lg border w-full">
             <div class="mt-4 flex flex-wrap gap-2">
-                <button id="deleteItemBtn" onclick="window.deleteCurrentItem()" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium flex items-center justify-center gap-2">
+                <button id="deleteItemBtn" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium flex items-center justify-center gap-2">
                     <i class="fa-solid fa-trash"></i> Hapus
                 </button>
             </div>
@@ -429,13 +427,13 @@
                   Salin Data
                 </h4>
                 <div class="space-y-2">
-                  <button onclick="window.copyElementText('detailPrompt')" class="copy-btn w-full text-left px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-between">
+                  <button id="copyPromptBtn" class="copy-btn w-full text-left px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-between">
                     <span>Salin Prompt</span><i class="fa-solid fa-copy"></i>
                   </button>
-                  <button onclick="window.copyElementText('detailNegativePrompt')" class="copy-btn w-full text-left px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-between">
+                  <button id="copyNegativePromptBtn" class="copy-btn w-full text-left px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-between">
                     <span>Salin Negative Prompt</span><i class="fa-solid fa-copy"></i>
                   </button>
-                  <button onclick="window.copyAllParameters()" class="copy-btn w-full text-left px-3 py-2 bg-indigo-200 hover:bg-indigo-300 rounded-lg flex items-center justify-between font-semibold text-indigo-800">
+                  <button id="copyAllParametersBtn" class="copy-btn w-full text-left px-3 py-2 bg-indigo-200 hover:bg-indigo-300 rounded-lg flex items-center justify-between font-semibold text-indigo-800">
                     <span>Salin Semua Parameter</span><i class="fa-solid fa-paste"></i>
                   </button>
                 </div>
@@ -457,16 +455,16 @@
                     <h4 class="font-semibold text-lg flex items-center gap-2"><i class="fa-solid fa-info-circle"></i>Parameter</h4>
                 </div>
                 <div class="mt-3 space-y-2 text-sm">
-                    <div class="flex justify-between items-center"><span><strong>Platform:</strong> <span id="detailPlatform" class="font-normal capitalize"></span></span><i class="fa-solid fa-copy copy-icon" onclick="window.copyElementText('detailPlatform')"></i></div>
-                    <div class="flex justify-between items-center"><span><strong>Model:</strong> <span id="detailModel" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" onclick="window.copyElementText('detailModel')"></i></div>
+                    <div class="flex justify-between items-center"><span><strong>Platform:</strong> <span id="detailPlatform" class="font-normal capitalize"></span></span><i class="fa-solid fa-copy copy-icon" id="copyPlatformBtn"></i></div>
+                    <div class="flex justify-between items-center"><span><strong>Model:</strong> <span id="detailModel" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copyModelBtn"></i></div>
                     
                     <div id="detailTensorParams" class="space-y-2">
-                        <div class="flex justify-between items-center"><span><strong>VAE:</strong> <span id="detailVae" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" onclick="window.copyElementText('detailVae')"></i></div>
-                        <div class="flex justify-between items-center"><span><strong>Sampler:</strong> <span id="detailSampler" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" onclick="window.copyElementText('detailSampler')"></i></div>
-                        <div class="flex justify-between items-center"><span><strong>Scheduler:</strong> <span id="detailScheduler" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" onclick="window.copyElementText('detailScheduler')"></i></div>
-                        <div class="flex justify-between items-center"><span><strong>Steps:</strong> <span id="detailSteps" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" onclick="window.copyElementText('detailSteps')"></i></div>
-                        <div class="flex justify-between items-center"><span><strong>CFG Scale:</strong> <span id="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" onclick="window.copyElementText('detailCfg')"></i></div>
-                        <div class="flex justify-between items-center"><span><strong>Seed:</strong> <span id="detailSeed" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" onclick="window.copyElementText('detailSeed')"></i></div>
+                        <div class="flex justify-between items-center"><span><strong>VAE:</strong> <span id="detailVae" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copyVaeBtn"></i></div>
+                        <div class="flex justify-between items-center"><span><strong>Sampler:</strong> <span id="detailSampler" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copySamplerBtn"></i></div>
+                        <div class="flex justify-between items-center"><span><strong>Scheduler:</strong> <span id="detailScheduler" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copySchedulerBtn"></i></div>
+                        <div class="flex justify-between items-center"><span><strong>Steps:</strong> <span id="detailSteps" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copyStepsBtn"></i></div>
+                        <div class="flex justify-between items-center"><span><strong>CFG Scale:</strong> <span id="detailCfg" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copyCfgBtn"></i></div>
+                        <div class="flex justify-between items-center"><span><strong>Seed:</strong> <span id="detailSeed" class="font-normal"></span></span><i class="fa-solid fa-copy copy-icon" id="copySeedBtn"></i></div>
                         <div class="mt-2">
                             <strong>LoRA:</strong>
                             <div id="detailLora" class="space-y-1 mt-1"></div>
