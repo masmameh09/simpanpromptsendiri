@@ -8,8 +8,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signO
 import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, deleteDoc, doc, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 // ===================================================================================
-// FIREBASE CONFIGURATION (GANTI DENGAN KREDENSIAL PROYEK ANDA)
-// Anda bisa temukan ini di Firebase Console -> Project settings -> General
+// FIREBASE CONFIGURATION (SUDAH DIISI DENGAN KREDENSIAL ANDA)
 // ===================================================================================
 const firebaseConfig = {
   apiKey: "AIzaSyBtwTZezlde_klGTybktv76cYmSvV9CiuE",
@@ -27,14 +26,11 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ===================================================================================
-// CLOUDINARY CONFIGURATION (GANTI DENGAN KREDENSIAL ANDA)
-// cloud_name dari Dashboard Cloudinary Anda.
-// upload_preset dari Upload Preset yang Anda buat (harus UNSIGNED).
+// CLOUDINARY CONFIGURATION (SUDAH DIISI DENGAN KREDENSIAL ANDA)
 // ===================================================================================
-const CLOUDINARY_CLOUD_NAME = "imajinasilokal"; // Ganti ini
-const CLOUDINARY_UPLOAD_PRESET = "simpan_lokal"; // Ganti ini
+const CLOUDINARY_CLOUD_NAME = "imajinasilokal";
+const CLOUDINARY_UPLOAD_PRESET = "simpan_lokal";
 const MAX_IMAGE_SIZE_BYTES = 1 * 1024 * 1024; // 1 MB (1 * 1024 KB * 1024 bytes/KB)
-
 
 // ===================================================================================
 // GLOBAL VARIABLES AND DOM ELEMENTS
@@ -493,7 +489,7 @@ document.getElementById('resetFormBtn').addEventListener('click', () => {
 });
 
 // Handle Export JSON button with custom filename
-exportJsonBtn.addEventListener('click', function() {
+window.exportJson = function() { // Made global
   if (window.collections.length === 0) {
     showToast('Tidak ada data untuk diekspor.');
     return;
@@ -515,10 +511,10 @@ exportJsonBtn.addEventListener('click', function() {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
   showToast('Data berhasil diekspor!');
-});
+};
 
 // Handle Export ZIP button (placeholder/explanation)
-exportZipBtn.addEventListener('click', function() {
+window.exportZip = function() { // Made global
     showToast('Ekspor ke ZIP dengan gambar memerlukan backend yang lebih kompleks. Untuk saat ini, Anda bisa mengekspor JSON.');
     // Implementasi ZIP dengan gambar dari Cloudinary memerlukan:
     // 1. Library JSZip (https://stuk.github.io/jszip/)
@@ -532,11 +528,11 @@ exportZipBtn.addEventListener('click', function() {
     // zip.generateAsync({type:"blob"}).then(function(content) {
     //     saveAs(content, filename.replace('.json', '.zip'));
     // });
-});
+};
 
 
 // Handle Import JSON button
-document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importInput').click());
+window.importJson = () => document.getElementById('importInput').click(); // Made global
 document.getElementById('importInput').addEventListener('change', async function(e) {
   const file = e.target.files[0];
   if (file) {
@@ -584,7 +580,7 @@ document.getElementById('importInput').addEventListener('change', async function
 });
 
 // Handle Clear All button (menghapus semua koleksi pengguna)
-clearAllBtn.addEventListener('click', async function() { // Use clearAllBtn
+window.clearAllCollections = async function() { // Made global
     if (!window.currentUser) {
       showToast('Anda harus login untuk menghapus koleksi!');
       return;
@@ -608,7 +604,7 @@ clearAllBtn.addEventListener('click', async function() { // Use clearAllBtn
             showToast('Gagal menghapus semua koleksi.');
         }
     }
-});
+};
 
 // ===================================================================================
 // DETAIL MODAL FUNCTIONS
@@ -667,7 +663,7 @@ window.closeDetailModal = () => { // Made global
   currentDetailIndex = -1;
 };
 
-document.getElementById('deleteItemBtn').addEventListener('click', async function() {
+window.deleteCurrentItem = async function() { // Made global
     if (currentDetailIndex > -1 && window.currentUser) {
         const itemToDelete = window.collections[currentDetailIndex];
         const userConfirmed = window.confirm('Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dibatalkan.');
@@ -678,7 +674,7 @@ document.getElementById('deleteItemBtn').addEventListener('click', async functio
     } else if (!window.currentUser) {
         showToast('Anda harus login untuk menghapus koleksi!');
     }
-});
+};
 
 // ===================================================================================
 // FILTERING FUNCTIONS
@@ -714,7 +710,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('gemini').dispatchEvent(new Event('change'));
   
   // Tampilkan halaman landing di awal
-  window.showPage('landingPage'); // Call global
+  window.showPage('landingPage'); 
   
   // onAuthStateChanged akan secara otomatis mencoba login anonim
   // yang akan memicu loadCollections jika berhasil
